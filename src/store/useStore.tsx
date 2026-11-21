@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react';
 import { supabase, getDeviceUserId } from '@/lib/supabase';
-import { fetchSchemes, Scheme } from '@/lib/schemeService';
-import { SCHEMES as LOCAL_SCHEMES } from '@/data/schemes';
+import { fetchSchemes } from '@/lib/schemeService';
+import { SCHEMES as LOCAL_SCHEMES, Scheme } from '@/data/schemes';
 
 export type Lang = 'en' | 'te' | 'hi';
 export type AppStatus = 'Not Started' | 'Preparing Documents' | 'Ready to Apply' | 'Applied';

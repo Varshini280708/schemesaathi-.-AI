@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FileText, ArrowRight, CalendarClock } from 'lucide-react';
 import { SCHEMES } from '@/data/schemes';
-import { useStore, AppStatus } from '@/store/useStore';
+import { useStore, AppStatus, useSchemes } from '@/store/useStore';
 import { Notfound } from '@/pages/NotFound';
 import { formatDate } from '@/lib/date';
 
@@ -16,6 +16,7 @@ const STATUS_STYLES: Record<AppStatus, string> = {
 
 export function Applications() {
   const { applications, updateApplication } = useStore();
+  const allSchemes = useSchemes();
   const entries = Object.entries(applications);
 
   return (
@@ -41,7 +42,7 @@ export function Applications() {
       ) : (
         <div className="space-y-4">
           {entries.map(([id, app], i) => {
-            const scheme = SCHEMES.find((s) => s.id === id);
+            const scheme = allSchemes.find((s) => s.id === id);
             if (!scheme) return null;
             return <AppRow key={id} schemeId={id} index={i} />;
           })}
@@ -53,7 +54,8 @@ export function Applications() {
 
 function AppRow({ schemeId, index }: { schemeId: string; index: number }) {
   const { applications, updateApplication, savedSchemes } = useStore();
-  const scheme = SCHEMES.find((s) => s.id === schemeId);
+  const allSchemes = useSchemes();
+  const scheme = allSchemes.find((s) => s.id === schemeId);
   if (!scheme) return <Notfound />;
   const app = applications[schemeId];
   if (!app) return null;

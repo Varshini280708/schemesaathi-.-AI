@@ -16,8 +16,8 @@ import {
   ArrowRight,
   Sparkles,
 } from 'lucide-react';
-import { CATEGORIES, SCHEMES, UPCOMING_DEADLINES, Category } from '@/data/schemes';
-import { useStore } from '@/store/useStore';
+import { CATEGORIES, UPCOMING_DEADLINES, Category } from '@/data/schemes';
+import { useStore, useSchemes } from '@/store/useStore';
 import { SchemeCard } from '@/components/SchemeCard';
 import { deadlineLabel, formatDate } from '@/lib/date';
 import { t } from '@/lib/i18n';
@@ -36,10 +36,11 @@ const EXAMPLE = 'I am a college student in Telangana. My family income is limite
 
 export function Dashboard() {
   const { recentlyViewed, savedSchemes, applications, lang, getApplication } = useStore();
+  const allSchemes = useSchemes();
   const nav = useNavigate();
 
-  const recent = recentlyViewed.map((id) => SCHEMES.find((s) => s.id === id)!).filter(Boolean);
-  const saved = savedSchemes.map((id) => SCHEMES.find((s) => s.id === id)!).filter(Boolean);
+  const recent = recentlyViewed.map((id) => allSchemes.find((s) => s.id === id)!).filter(Boolean);
+  const saved = savedSchemes.map((id) => allSchemes.find((s) => s.id === id)!).filter(Boolean);
   const activeApps = Object.entries(applications);
   const deadlines = UPCOMING_DEADLINES.filter((d) => new Date(d.date) >= new Date()).slice(0, 4);
 
@@ -186,7 +187,7 @@ export function Dashboard() {
           ) : (
             <div className="space-y-3">
               {activeApps.slice(0, 3).map(([id, app]) => {
-                const scheme = SCHEMES.find((s) => s.id === id);
+                const scheme = allSchemes.find((s) => s.id === id);
                 if (!scheme) return null;
                 const pct = Math.round((app.completedSteps.length / scheme.applicationSteps.length) * 100);
                 return (
@@ -220,7 +221,7 @@ export function Dashboard() {
           </div>
           <div className="space-y-2">
             {deadlines.map((d) => {
-              const scheme = SCHEMES.find((s) => s.id === d.schemeId);
+              const scheme = allSchemes.find((s) => s.id === d.schemeId);
               if (!scheme) return null;
               const urgent = new Date(d.date).getTime() - Date.now() < 14 * 86400000;
               return (
@@ -248,11 +249,11 @@ export function Dashboard() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-bold text-lg text-navy-900">Popular schemes</h2>
           <Link to="/discover" className="text-xs font-semibold text-teal-600 hover:text-teal-700">
-            See all {SCHEMES.length} schemes
+            See all {allSchemes.length} schemes
           </Link>
         </div>
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {SCHEMES.slice(0, 3).map((s, i) => (
+          {allSchemes.slice(0, 3).map((s, i) => (
             <SchemeCard key={s.id} scheme={s} index={i} />
           ))}
         </div>

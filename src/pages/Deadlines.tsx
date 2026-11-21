@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CalendarClock, Bell, BellOff, AlertTriangle, ChevronRight, ArrowUpDown } from 'lucide-react';
 import { SCHEMES, UPCOMING_DEADLINES } from '@/data/schemes';
-import { useStore } from '@/store/useStore';
+import { useStore, useSchemes } from '@/store/useStore';
 import { daysUntil, formatDate, deadlineLabel } from '@/lib/date';
 
 const PRIORITY_STYLES = {
@@ -15,6 +15,7 @@ type Sort = 'date' | 'priority';
 
 export function Deadlines() {
   const { getApplication, updateApplication } = useStore();
+  const allSchemes = useSchemes();
   const [sort, setSort] = useState<Sort>('date');
   const [mockNotif, setMockNotif] = useState(false);
 
@@ -81,7 +82,7 @@ export function Deadlines() {
         ) : (
           <div className="flex flex-wrap gap-2">
             {savedIds.map((d) => {
-              const s = SCHEMES.find((x) => x.id === d.schemeId);
+              const s = allSchemes.find((x) => x.id === d.schemeId);
               if (!s) return null;
               return (
                 <span key={d.schemeId} className="chip bg-teal-50 text-teal-700 border border-teal-200">
@@ -97,7 +98,7 @@ export function Deadlines() {
         <h2 className="font-bold text-lg text-navy-900 mb-4">Upcoming deadlines</h2>
         <div className="space-y-3">
           {items.map((d, i) => {
-            const scheme = SCHEMES.find((s) => s.id === d.schemeId);
+            const scheme = allSchemes.find((s) => s.id === d.schemeId);
             if (!scheme) return null;
             const app = getApplication(d.schemeId);
             const days = daysUntil(d.date);
@@ -154,7 +155,7 @@ export function Deadlines() {
               </div>
               <div className="space-y-2">
                 {ds.map((d) => {
-                  const scheme = SCHEMES.find((s) => s.id === d.schemeId);
+                  const scheme = allSchemes.find((s) => s.id === d.schemeId);
                   if (!scheme) return null;
                   return (
                     <div key={d.schemeId + d.date} className="flex items-center gap-3 text-sm">

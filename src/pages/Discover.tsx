@@ -4,7 +4,7 @@ import { Send, Mic, Bot, User, Trash2, SlidersHorizontal, Search } from 'lucide-
 import { SCHEMES, CATEGORIES, Scheme, Category } from '@/data/schemes';
 import { ChatMsg, getAIResponse, getGreeting } from '@/lib/ai';
 import { SchemeCard } from '@/components/SchemeCard';
-import { useStore } from '@/store/useStore';
+import { useStore, useSchemes } from '@/store/useStore';
 
 const EXAMPLE = 'I am a college student studying in Telangana. My family income is limited. I want to find scholarships.';
 
@@ -25,6 +25,7 @@ export function Discover() {
   const [sortBy, setSortBy] = useState<'relevance' | 'deadline' | 'name'>('relevance');
   const scrollRef = useRef<HTMLDivElement>(null);
   const { lang } = useStore();
+  const allSchemes = useSchemes();
 
   useEffect(() => {
     if (messages.length === 0) {
@@ -53,12 +54,12 @@ export function Discover() {
 
   const matchedIds = new Set(messages.flatMap((m) => m.schemeIds ?? []));
   const now = Date.now();
-  let results: Scheme[] = SCHEMES;
+  let results: Scheme[] = allSchemes;
   if (matchedIds.size > 0) {
     const ranked = [...matchedIds]
-      .map((id) => SCHEMES.find((s) => s.id === id)!)
+      .map((id) => allSchemes.find((s) => s.id === id)!)
       .filter(Boolean);
-    results = [...ranked, ...SCHEMES.filter((s) => !matchedIds.has(s.id))];
+    results = [...ranked, ...allSchemes.filter((s) => !matchedIds.has(s.id))];
   }
   if (category !== 'All') results = results.filter((s) => s.category === category);
   if (deadline !== 'all') {
@@ -123,7 +124,7 @@ export function Discover() {
                 {m.schemeIds && m.schemeIds.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-2.5">
                     {m.schemeIds.map((id) => {
-                      const s = SCHEMES.find((x) => x.id === id);
+                      const s = allSchemes.find((x) => x.id === id);
                       if (!s) return null;
                       return (
                         <a
